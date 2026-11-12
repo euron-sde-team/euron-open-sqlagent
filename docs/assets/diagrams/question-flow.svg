@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 300" width="1100" height="300" role="img" aria-label="A question end to end: ask, queue, schema, prompt, model, SQL guard, read-only execution with limits, snapshot and audit, answer with a chart. A refusal stops at the guard and never reaches the database">
+  <defs>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#52626a"/></marker>
+  </defs>
+  <rect width="1100" height="300" rx="18" fill="#f4f7f7"/>
+  <g font-family="Inter, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" fill="#0f1a1c" text-anchor="middle">
+    <text x="40" y="34" text-anchor="start" font-size="16" font-weight="700">A question, end to end</text>
+    <g>
+      <rect x="30" y="80" width="110" height="64" rx="12" fill="#ffffff" stroke="#dfe7e8"/>
+      <text x="85" y="108" font-weight="600">1. Ask</text><text x="85" y="126" fill="#52626a" font-size="11.5">queued, audited</text>
+      <rect x="160" y="80" width="110" height="64" rx="12" fill="#ffffff" stroke="#dfe7e8"/>
+      <text x="215" y="108" font-weight="600">2. Claim</text><text x="215" y="126" fill="#52626a" font-size="11.5">leased worker</text>
+      <rect x="290" y="80" width="110" height="64" rx="12" fill="#ffffff" stroke="#dfe7e8"/>
+      <text x="345" y="108" font-weight="600">3. Schema</text><text x="345" y="126" fill="#52626a" font-size="11.5">cached, real</text>
+      <rect x="420" y="80" width="110" height="64" rx="12" fill="#ffffff" stroke="#dfe7e8"/>
+      <text x="475" y="108" font-weight="600">4. Prompt</text><text x="475" y="126" fill="#52626a" font-size="11.5">+ prior turns</text>
+      <rect x="550" y="80" width="110" height="64" rx="12" fill="#ffffff" stroke="#dfe7e8"/>
+      <text x="605" y="108" font-weight="600">5. Model</text><text x="605" y="126" fill="#52626a" font-size="11.5">SQL + explanation</text>
+      <rect x="680" y="72" width="120" height="80" rx="12" fill="#ddf1ec" stroke="#0e7c6b" stroke-width="1.6"/>
+      <text x="740" y="104" font-weight="700" fill="#0e7c6b">6. SQL guard</text><text x="740" y="124" fill="#0e7c6b" font-size="11.5">one read-only</text><text x="740" y="139" fill="#0e7c6b" font-size="11.5">SELECT</text>
+      <rect x="820" y="72" width="120" height="80" rx="12" fill="#ffffff" stroke="#0e7c6b"/>
+      <text x="880" y="100" font-weight="600">7. Execute</text><text x="880" y="118" fill="#52626a" font-size="11.5">read-only session</text><text x="880" y="134" fill="#52626a" font-size="11.5">scan, rows, timeout</text>
+      <rect x="960" y="72" width="110" height="80" rx="12" fill="#ffffff" stroke="#dfe7e8"/>
+      <text x="1015" y="100" font-weight="600">8. Answer</text><text x="1015" y="118" fill="#52626a" font-size="11.5">snapshot, audit</text><text x="1015" y="134" fill="#52626a" font-size="11.5">table + chart</text>
+    </g>
+    <g stroke="#52626a" fill="none" marker-end="url(#b)">
+      <path d="M140 112H158"/><path d="M270 112H288"/><path d="M400 112H418"/><path d="M530 112H548"/><path d="M660 112H678"/><path d="M800 112H818"/><path d="M940 112H958"/>
+    </g>
+    <path d="M740 152V210" stroke="#c0234a" fill="none" stroke-width="1.6" marker-end="url(#b)"/>
+    <rect x="600" y="212" width="280" height="54" rx="12" fill="#fde8ed" stroke="#c0234a"/>
+    <text x="740" y="236" font-weight="600" fill="#c0234a">Refused: shown with its reason</text>
+    <text x="740" y="254" fill="#c0234a" font-size="11.5">recorded, never retried, never reaches a database</text>
+    <text x="215" y="190" fill="#52626a" font-size="11.5">a dead worker loses its lease; another answers</text>
+    <text x="475" y="190" fill="#52626a" font-size="11.5">"and last year?" sees the previous SQL</text>
+  </g>
+</svg>

@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 400" width="1280" height="400" role="img" aria-label="Euron Open SQLAgent: ask your database anything, and only read-only SQL ever runs">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#06171a"/>
+      <stop offset="1" stop-color="#0b2a2a"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.82" cy="0.15" r="0.6">
+      <stop offset="0" stop-color="#0f9a80" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#0f9a80" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#ffffff" stroke-opacity="0.05"/>
+    </pattern>
+  </defs>
+  <rect width="1280" height="400" fill="url(#bg)"/>
+  <rect width="1280" height="400" fill="url(#grid)"/>
+  <rect width="1280" height="400" fill="url(#glow)"/>
+  <g font-family="Inter, -apple-system, Segoe UI, Helvetica, Arial, sans-serif">
+    <g transform="translate(72 70)">
+      <rect width="44" height="44" rx="12" fill="#0f9a80"/>
+      <ellipse cx="22" cy="14" rx="11" ry="4.5" fill="none" stroke="#ffffff" stroke-width="2.4"/>
+      <path d="M11 14v16c0 2.5 5 4.5 11 4.5s11-2 11-4.5V14" fill="none" stroke="#ffffff" stroke-width="2.4"/>
+      <path d="M11 22c0 2.5 5 4.5 11 4.5s11-2 11-4.5" fill="none" stroke="#ffffff" stroke-width="2.4"/>
+      <text x="60" y="30" font-size="20" font-weight="600" fill="#8fe6d1">Euron Open</text>
+    </g>
+    <text x="72" y="178" font-size="58" font-weight="700" fill="#ffffff" letter-spacing="-1.5">SQLAgent</text>
+    <text x="72" y="226" font-size="24" fill="#d7e4e4">Ask your database anything in plain English.</text>
+    <text x="72" y="260" font-size="24" fill="#8fe6d1">Only one read-only SELECT ever runs.</text>
+    <text x="72" y="318" font-size="15" fill="#86a0a2">PostgreSQL · MySQL · SQLite · self-hosted · MIT</text>
+    <text x="72" y="342" font-size="15" fill="#86a0a2">OpenAI · Anthropic · Gemini · Ollama · any OpenAI-compatible model</text>
+  </g>
+  <g transform="translate(720 64)" font-family="Inter, -apple-system, Segoe UI, Helvetica, Arial, sans-serif">
+    <rect width="490" height="272" rx="18" fill="#ffffff" fill-opacity="0.06" stroke="#ffffff" stroke-opacity="0.1"/>
+    <rect x="200" y="20" width="270" height="36" rx="16" fill="#0f9a80"/>
+    <text x="216" y="43" font-size="14" fill="#ffffff">Revenue by country this year?</text>
+    <rect x="20" y="72" width="450" height="78" rx="10" fill="#0b1416"/>
+    <g font-family="JetBrains Mono, SFMono-Regular, Menlo, monospace" font-size="12.5">
+      <text x="34" y="96" fill="#8fe6d1">SELECT <tspan fill="#d7e4e4">t1.country, SUM(t0.total_amount) AS revenue</tspan></text>
+      <text x="34" y="116" fill="#8fe6d1">FROM <tspan fill="#d7e4e4">orders t0 JOIN customers t1 ON ...</tspan></text>
+      <text x="34" y="136" fill="#8fe6d1">GROUP BY <tspan fill="#d7e4e4">t1.country ORDER BY revenue DESC</tspan></text>
+    </g>
+    <rect x="20" y="164" width="168" height="24" rx="12" fill="#0f9a80" fill-opacity="0.25"/>
+    <text x="34" y="181" font-size="12.5" font-weight="600" fill="#8fe6d1">Validated read-only</text>
+    <text x="200" y="181" font-size="12.5" fill="#86a0a2">8 rows in 38 ms</text>
+    <g transform="translate(24 200)">
+      <rect x="0" y="12" width="44" height="52" rx="4" fill="#2fc1a0"/>
+      <rect x="56" y="22" width="44" height="42" rx="4" fill="#2fc1a0"/>
+      <rect x="112" y="28" width="44" height="36" rx="4" fill="#2fc1a0"/>
+      <rect x="168" y="36" width="44" height="28" rx="4" fill="#2fc1a0"/>
+      <rect x="224" y="40" width="44" height="24" rx="4" fill="#2fc1a0"/>
+      <rect x="280" y="46" width="44" height="18" rx="4" fill="#2fc1a0"/>
+      <rect x="336" y="50" width="44" height="14" rx="4" fill="#2fc1a0"/>
+      <rect x="392" y="54" width="44" height="10" rx="4" fill="#2fc1a0"/>
+    </g>
+  </g>
+</svg>

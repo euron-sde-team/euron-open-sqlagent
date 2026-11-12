@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 520" width="1100" height="520" role="img" aria-label="SQLAgent architecture: the web app and SDK call the API; the API queues questions in PostgreSQL; workers answer them with a model provider and read-only connections to customer databases; the scheduler refreshes schemas and applies retention">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#52626a"/></marker>
+  </defs>
+  <rect width="1100" height="520" rx="18" fill="#f4f7f7"/>
+  <g font-family="Inter, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#0f1a1c">
+    <g>
+      <rect x="40" y="60" width="190" height="70" rx="12" fill="#ffffff" stroke="#dfe7e8"/>
+      <text x="135" y="90" text-anchor="middle" font-weight="600">Web app (Next.js)</text>
+      <text x="135" y="110" text-anchor="middle" fill="#52626a" font-size="12">ask, connections, history</text>
+      <rect x="40" y="160" width="190" height="70" rx="12" fill="#ffffff" stroke="#dfe7e8"/>
+      <text x="135" y="190" text-anchor="middle" font-weight="600">Python SDK and CLI</text>
+      <text x="135" y="210" text-anchor="middle" fill="#52626a" font-size="12">project API keys</text>
+    </g>
+    <rect x="300" y="90" width="210" height="110" rx="12" fill="#ddf1ec" stroke="#0e7c6b"/>
+    <text x="405" y="122" text-anchor="middle" font-weight="700" fill="#0e7c6b">API</text>
+    <text x="405" y="144" text-anchor="middle" font-size="12">sqlagent serve</text>
+    <text x="405" y="162" text-anchor="middle" font-size="12" fill="#52626a">auth, roles, tenancy</text>
+    <text x="405" y="180" text-anchor="middle" font-size="12" fill="#52626a">generate, validate, explain</text>
+    <path d="M230 95L298 125" stroke="#52626a" fill="none" marker-end="url(#a)"/>
+    <path d="M230 195L298 170" stroke="#52626a" fill="none" marker-end="url(#a)"/>
+
+    <rect x="580" y="60" width="220" height="150" rx="12" fill="#ffffff" stroke="#dfe7e8"/>
+    <text x="690" y="88" text-anchor="middle" font-weight="700">PostgreSQL 16</text>
+    <text x="690" y="110" text-anchor="middle" font-size="12" fill="#52626a">tenants, sealed connections</text>
+    <text x="690" y="128" text-anchor="middle" font-size="12" fill="#52626a">schema cache, conversations</text>
+    <text x="690" y="146" text-anchor="middle" font-size="12" fill="#52626a">the question queue</text>
+    <text x="690" y="164" text-anchor="middle" font-size="12" fill="#52626a">executions, usage</text>
+    <text x="690" y="182" text-anchor="middle" font-size="12" fill="#52626a">append-only audit log</text>
+    <path d="M510 130L578 130" stroke="#52626a" fill="none" marker-end="url(#a)"/>
+
+    <rect x="870" y="60" width="190" height="64" rx="12" fill="#ffffff" stroke="#dfe7e8"/>
+    <text x="965" y="88" text-anchor="middle" font-weight="600">Redis 7</text>
+    <text x="965" y="106" text-anchor="middle" font-size="12" fill="#52626a">rate limits, caches, wake-ups</text>
+    <rect x="870" y="146" width="190" height="64" rx="12" fill="#ffffff" stroke="#dfe7e8"/>
+    <text x="965" y="174" text-anchor="middle" font-weight="600">S3 and KMS</text>
+    <text x="965" y="192" text-anchor="middle" font-size="12" fill="#52626a">SQLite files, results, sealing</text>
+    <path d="M800 92L868 92" stroke="#52626a" fill="none" marker-end="url(#a)"/>
+    <path d="M800 170L868 178" stroke="#52626a" fill="none" marker-end="url(#a)"/>
+
+    <rect x="300" y="290" width="210" height="96" rx="12" fill="#ddf1ec" stroke="#0e7c6b"/>
+    <text x="405" y="320" text-anchor="middle" font-weight="700" fill="#0e7c6b">Workers</text>
+    <text x="405" y="342" text-anchor="middle" font-size="12">sqlagent worker</text>
+    <text x="405" y="360" text-anchor="middle" font-size="12" fill="#52626a">prompt, model, SQL guard,</text>
+    <text x="405" y="376" text-anchor="middle" font-size="12" fill="#52626a">read-only execution</text>
+    <rect x="300" y="410" width="210" height="70" rx="12" fill="#ffffff" stroke="#dfe7e8"/>
+    <text x="405" y="438" text-anchor="middle" font-weight="600">Scheduler</text>
+    <text x="405" y="458" text-anchor="middle" font-size="12" fill="#52626a">reaper, schema refresh, retention</text>
+    <path d="M610 212L500 288" stroke="#52626a" fill="none" marker-end="url(#a)"/>
+    <text x="575" y="262" font-size="11.5" fill="#52626a">claim (SKIP LOCKED)</text>
+
+    <rect x="580" y="300" width="220" height="78" rx="12" fill="#ffffff" stroke="#dfe7e8"/>
+    <text x="690" y="328" text-anchor="middle" font-weight="600">Model provider</text>
+    <text x="690" y="348" text-anchor="middle" font-size="12" fill="#52626a">OpenAI, Anthropic, Gemini,</text>
+    <text x="690" y="364" text-anchor="middle" font-size="12" fill="#52626a">Ollama, compatible, or the mock</text>
+    <path d="M510 336L578 336" stroke="#52626a" fill="none" marker-end="url(#a)"/>
+
+    <rect x="870" y="290" width="190" height="190" rx="12" fill="#ffffff" stroke="#0e7c6b" stroke-dasharray="5 4"/>
+    <text x="965" y="318" text-anchor="middle" font-weight="700">Your databases</text>
+    <text x="965" y="340" text-anchor="middle" font-size="12" fill="#52626a">PostgreSQL, MySQL, SQLite</text>
+    <rect x="890" y="356" width="150" height="26" rx="13" fill="#ddf1ec"/>
+    <text x="965" y="374" text-anchor="middle" font-size="12" font-weight="600" fill="#0e7c6b">read-only session</text>
+    <rect x="890" y="390" width="150" height="26" rx="13" fill="#ddf1ec"/>
+    <text x="965" y="408" text-anchor="middle" font-size="12" font-weight="600" fill="#0e7c6b">scan and row limits</text>
+    <rect x="890" y="424" width="150" height="26" rx="13" fill="#ddf1ec"/>
+    <text x="965" y="442" text-anchor="middle" font-size="12" font-weight="600" fill="#0e7c6b">statement timeout</text>
+    <path d="M510 380C700 420 760 430 868 410" stroke="#0e7c6b" stroke-width="1.6" fill="none" marker-end="url(#a)"/>
+    <text x="660" y="440" font-size="11.5" fill="#0e7c6b">only after the SQL guard accepts</text>
+    <path d="M510 445C700 480 800 480 868 465" stroke="#52626a" fill="none" marker-end="url(#a)"/>
+  </g>
+  <text x="40" y="34" font-family="Inter, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" font-weight="700" fill="#0f1a1c">Euron Open SQLAgent: architecture</text>
+</svg>
