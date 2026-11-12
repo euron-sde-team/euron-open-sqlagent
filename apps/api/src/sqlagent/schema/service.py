@@ -30,6 +30,7 @@ from sqlagent.connections import service as connections
 from sqlagent.connections.models import Connection
 from sqlagent.core.container import Container
 from sqlagent.core.errors import AppError
+from sqlagent.observability import metrics
 from sqlagent.schema.models import SchemaCache
 from sqlagent.schema.schemas import SchemaOut, SchemaTable
 
@@ -132,6 +133,7 @@ async def _cache_set(
             CACHE_TTL_S,
         )
     except Exception:  # a cache outage only costs a database read
+        metrics.DEPENDENCY_ERRORS.labels("cache", "schema_write").inc()
         log.warning("schema cache write failed", exc_info=True)
 
 
@@ -155,6 +157,7 @@ async def load(container: Container, session: AsyncSession, conn: Connection) ->
     try:
         cached = await container.kv.get(_key(conn.id, refreshed_at))
     except Exception:
+        metrics.DEPENDENCY_ERRORS.labels("cache", "schema_read").inc()
         cached = None
     if cached is not None:
         tables = [SchemaTable.model_validate(t) for t in orjson.loads(cached)]

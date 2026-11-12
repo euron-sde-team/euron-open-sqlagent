@@ -297,12 +297,14 @@ async def snapshot(container: Container, ex: QueryExecution) -> list[list[Any]]:
     try:
         cached = await container.kv.get(cache_key)
     except Exception:
+        metrics.DEPENDENCY_ERRORS.labels("cache", "result_read").inc()
         cached = None
     raw = cached if cached is not None else await container.storage.get(ex.result_key)
     if cached is None:
         try:
             await container.kv.set(cache_key, raw, SNAPSHOT_CACHE_S)
         except Exception:
+            metrics.DEPENDENCY_ERRORS.labels("cache", "result_write").inc()
             log.warning("result cache write failed", exc_info=True)
     rows: list[list[Any]] = orjson.loads(raw)["rows"]
     return rows

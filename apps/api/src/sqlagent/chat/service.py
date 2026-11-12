@@ -27,6 +27,7 @@ from sqlagent.core.errors import AppError, NotFoundError, RateLimitedError
 from sqlagent.core.schemas import decode_cursor, encode_cursor
 from sqlagent.executions import service as executions
 from sqlagent.executions.models import QueryExecution
+from sqlagent.observability import metrics
 from sqlagent.projects.access import Principal
 from sqlagent.providers import service as providers
 
@@ -42,6 +43,7 @@ async def _limit(container: Container, p: Principal) -> None:
             f"questions:{p.project_id}", container.settings.question_rpm
         )
     except Exception:
+        metrics.DEPENDENCY_ERRORS.labels("cache", "rate_limit").inc()
         return  # a cache outage never blocks questions
     if not decision.allowed:
         raise RateLimitedError(
