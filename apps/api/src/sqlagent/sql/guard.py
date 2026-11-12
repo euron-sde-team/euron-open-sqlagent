@@ -10,9 +10,8 @@ This is the first of two locks. The second is the connection itself, opened read
 the database wherever the database supports it (``connections/sources.py``), so a query
 that slipped past this parser still cannot write.
 
-The design follows Euron Open DataQuality's ``engine/sqlguard.py``, narrowed to the three
-dialects SQLAgent connects to and extended with a structured verdict (the tables a query
-reads, its normalized text) that the API shows next to every query.
+It covers the three dialects SQLAgent connects to and returns a structured verdict (the
+tables a query reads, its normalized text) that the API shows next to every query.
 """
 
 from __future__ import annotations

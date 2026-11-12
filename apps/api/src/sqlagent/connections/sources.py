@@ -14,8 +14,6 @@ Every statement also runs under a timeout the database enforces (``statement_tim
 ``MAX_EXECUTION_TIME``, a SQLite progress handler), inside a transaction that is always
 rolled back, on a connection that is closed after use (no pool): a question holds one
 connection to the customer's database and gives it back.
-
-The design follows Euron Open DataQuality's ``sources/sql.py``.
 """
 
 from __future__ import annotations
