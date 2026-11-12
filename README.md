@@ -417,9 +417,9 @@ Report vulnerabilities privately: see [SECURITY.md](SECURITY.md).
 | Infrastructure | `terraform validate` (3 environments), tflint, checkov (318 passed, 0 failed), apply and destroy on an emulator | `make tf-validate tf-lint tf-security tf-aws-on-floci` |
 
 Unit and integration together cover 90% of the API. `make bench` on a laptop: the SQL guard
-takes a median 360 us per query; a question to its answer on the demo database takes a
-median 41 ms with the mock model (39 ms of it SQLAgent itself); discovering a 500-table,
-6,999-column schema takes 0.44 s.
+takes a median 354 us per query; a question to its answer on the demo database takes a
+median 53 ms with the mock model (51 ms of it SQLAgent itself); discovering a 500-table,
+6,999-column schema takes 0.57 s.
 
 [Testing guide](docs/guides/testing.md)
 

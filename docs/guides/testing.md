@@ -57,9 +57,9 @@ running stack.
 
 | Measure | Result |
 | --- | --- |
-| SQL guard, per query | median 360 us, p95 650 us |
-| Question to answer, demo shop, warm | median 41 ms, p95 180 ms; excluding model time, median 39 ms |
-| Schema discovery | 500 tables, 6,999 columns, 499 foreign keys in 0.44 s |
+| SQL guard, per query | median 354 us, p95 447 us |
+| Question to answer, demo shop, warm | median 53 ms, p95 106 ms; excluding model time, median 51 ms |
+| Schema discovery | 500 tables, 6,999 columns, 499 foreign keys in 0.57 s |
 
 Measured on a laptop (Apple silicon, Docker Desktop). Your numbers will differ; the shape
 should not.
