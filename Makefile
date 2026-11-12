@@ -15,6 +15,8 @@ TF_ROOT     := $(shell command -v terraform >/dev/null 2>&1 && echo infra/terraf
 ENV         ?= aws-dev
 # The demo password make env generated; e2e, qa and the seed use it.
 DEMO_PW      = $(shell grep -s '^SQLAGENT_DEMO_PASSWORD=' $(COMPOSE_DIR)/.env | cut -d= -f2)
+# The demo databases' read-only login (e2e connects a database through the web app).
+READER_PW    = $(shell grep -s '^SQLAGENT_READER_PASSWORD=' $(COMPOSE_DIR)/.env | cut -d= -f2)
 
 .PHONY: backup restore screenshots bench help env up up-aws down logs ps demo admin test test-integration test-matrix e2e qa \
         lint typecheck build openapi sanitize tf-fmt tf-validate tf-lint tf-security tf-aws-on-floci \
@@ -94,7 +96,7 @@ test-matrix: ## Integration tests under every key and storage backend (local and
 	@scripts/test-matrix.sh
 
 e2e: ## Browser end-to-end tests (Playwright) against the running stack (make up && make demo)
-	cd e2e && pnpm install --frozen-lockfile && pnpm exec playwright install chromium && E2E_PASSWORD='$(DEMO_PW)' pnpm test
+	cd e2e && pnpm install --frozen-lockfile && pnpm exec playwright install chromium && E2E_PASSWORD='$(DEMO_PW)' E2E_READER_PASSWORD='$(READER_PW)' pnpm test
 
 qa: ## Browser QA sweep (Puppeteer): every page, light and dark, desktop and phone
 	cd scripts/qa && pnpm install --frozen-lockfile && QA_PASSWORD='$(DEMO_PW)' node qa.mjs

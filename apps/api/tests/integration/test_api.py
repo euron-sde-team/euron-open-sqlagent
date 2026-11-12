@@ -3,6 +3,8 @@ executions, system."""
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import httpx
 import pytest
 
@@ -127,7 +129,17 @@ async def test_connections_lifecycle(ready: Stack, sources: Sources) -> None:
     resp = await ready.client.get(ready.p(f"/connections/{broken['id']}/schema"))
     assert resp.status_code == 400 and "Nothing answered" in resp.json()["error"]["message"]
     await ready.ok("DELETE", ready.p(f"/connections/{broken['id']}"), status=204)
+    ran = await ready.ok(
+        "POST", ready.p("/sql/execute"), {"connection_id": subs["id"], "sql": "SELECT 1 AS one"}
+    )
+    snapshot = (
+        Path(ready.settings.local_storage_dir)
+        / f"projects/{ready.project_id}/results/{ran['id']}.json"
+    )
+    assert ready.settings.storage != "local" or snapshot.exists()
     await ready.ok("DELETE", ready.p(f"/connections/{subs['id']}"), status=204)
+    # Its result snapshots go with it.
+    assert not snapshot.exists()
     assert [c["name"] for c in await ready.ok("GET", ready.p("/connections"))] == ["Shop"]
 
 

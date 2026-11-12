@@ -351,7 +351,22 @@ async def delete(
     container: Container, session: AsyncSession, p: Principal, conn: Connection
 ) -> None:
     """Remove the connection with its schema, conversations and templates (the audit log
-    keeps every query that ever ran against it)."""
+    keeps every query that ever ran against it). Result snapshots in object storage go
+    too: their execution rows are removed with the connection."""
+    from sqlagent.executions.models import QueryExecution
+
+    snapshots = [
+        k
+        for k in (
+            await session.scalars(
+                select(QueryExecution.result_key).where(
+                    QueryExecution.connection_id == conn.id,
+                    QueryExecution.result_key.is_not(None),
+                )
+            )
+        ).all()
+        if k
+    ]
     audit(
         session,
         p.actor,
@@ -364,8 +379,8 @@ async def delete(
     file_key = conn.file_key
     await session.delete(conn)
     await session.commit()
-    if file_key:
-        await container.storage.delete(file_key)
+    for key in [*snapshots, *([file_key] if file_key else [])]:
+        await container.storage.delete(key)
 
 
 async def _sqlite_copy(container: Container, key: str) -> Path:

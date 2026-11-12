@@ -154,38 +154,46 @@ async def _ask_all(
             await _drain(container)
 
 
+async def _spread_project(
+    session: Any, project_id: uuid.UUID, now: datetime, rng: random.Random
+) -> None:
+    """One project's conversations, oldest first, from 13 days ago to the last hour."""
+    convs = (
+        await session.scalars(
+            select(Conversation)
+            .where(Conversation.project_id == project_id)
+            .order_by(Conversation.created_at)
+        )
+    ).all()
+    n = len(convs)
+    for i, c in enumerate(convs):
+        age = timedelta(days=13 * (n - 1 - i) / max(n - 1, 1), minutes=rng.randint(30, 300))
+        at = now - age
+        c.created_at = at
+        c.last_message_at = at + timedelta(minutes=3 * c.message_count)
+        messages = (
+            await session.scalars(
+                select(ConversationMessage).where(ConversationMessage.conversation_id == c.id)
+            )
+        ).all()
+        for m in messages:
+            m.created_at = at + timedelta(minutes=2 * m.seq)
+            m.finished_at = m.created_at + timedelta(seconds=2 + m.seq)
+        await session.execute(
+            update(QueryExecution)
+            .where(QueryExecution.conversation_id == c.id)
+            .values(created_at=at + timedelta(minutes=1))
+        )
+
+
 async def _spread(container: Container, project_ids: list[uuid.UUID]) -> None:
     """Spread the conversations over the last two weeks (newest last), then rebuild the
     daily usage rollups from what really ran, so the charts tell the same story."""
     rng = random.Random(5)
     now = datetime.now(UTC)
     async with container.db.sessionmaker() as session:
-        convs = (
-            await session.scalars(
-                select(Conversation)
-                .where(Conversation.project_id.in_(project_ids))
-                .order_by(Conversation.created_at)
-            )
-        ).all()
-        n = len(convs)
-        for i, c in enumerate(convs):
-            age = timedelta(days=13 * (n - 1 - i) / max(n - 1, 1), minutes=rng.randint(0, 600))
-            at = now - age
-            c.created_at = at
-            c.last_message_at = at + timedelta(minutes=3 * c.message_count)
-            messages = (
-                await session.scalars(
-                    select(ConversationMessage).where(ConversationMessage.conversation_id == c.id)
-                )
-            ).all()
-            for m in messages:
-                m.created_at = at + timedelta(minutes=2 * m.seq)
-                m.finished_at = m.created_at + timedelta(seconds=2 + m.seq)
-            await session.execute(
-                update(QueryExecution)
-                .where(QueryExecution.conversation_id == c.id)
-                .values(created_at=at + timedelta(minutes=1))
-            )
+        for project_id in project_ids:
+            await _spread_project(session, project_id, now, rng)
         await session.execute(delete(UsageDaily).where(UsageDaily.project_id.in_(project_ids)))
         await session.execute(
             text(
@@ -419,6 +427,17 @@ async def run() -> None:
                 )
             )
             await session.commit()
+        # The saved questions get asked again, as a team would during a normal week.
+        async with container.db.sessionmaker() as session:
+            saved = (await session.scalars(select(QueryTemplate))).all()
+        for t in saved:
+            p = a_retail if t.project_id == retail_id else a_people
+            for _ in range(2):
+                async with container.db.sessionmaker() as session:
+                    tpl = await session.get(QueryTemplate, t.id)
+                    assert tpl is not None
+                    await templates.run(container, session, p, tpl)
+                await _drain(container)
         await _spread(container, [retail_id, people_id])
         async with container.db.sessionmaker() as session:
             counts: dict[str, Any] = {

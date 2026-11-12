@@ -1,7 +1,7 @@
 """Authentication: a session (cookie for the dashboard, bearer token for scripts) or a
 project API key (bearer ``sqa_<prefix>_<secret>`` or ``X-API-Key``) for other applications.
 
-Cookie-authenticated mutations must carry ``X-AOS-CSRF: 1``. Browsers cannot add a custom
+Cookie-authenticated mutations must carry ``X-SQA-CSRF: 1``. Browsers cannot add a custom
 header to a cross-site request without a CORS preflight, which the allowlist refuses, so
 this blocks CSRF without server-side token state.
 """

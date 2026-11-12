@@ -16,7 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useCurrentProject } from "@/features/projects/api";
 import { useProviders } from "@/features/providers/api";
 import { TemplateCard } from "@/features/templates/components/templates-screen";
-import { formatDuration, formatNumber, formatPercent, formatRelative, plural } from "@/lib/format";
+import { formatDuration, formatNumber, formatRatio, formatRelative, plural } from "@/lib/format";
 
 import { useOverview } from "../api";
 
@@ -67,7 +67,7 @@ export function OverviewScreen() {
               label="Answered"
               icon={TrendingUpIcon}
               loading={!d}
-              value={answeredRate == null ? "None yet" : formatPercent(answeredRate, 0)}
+              value={answeredRate == null ? "None yet" : formatRatio(answeredRate, 0)}
               tone={answeredRate != null && answeredRate >= 0.8 ? "good" : "default"}
               detail={d ? `${formatNumber(d.rows_returned_7d)} rows returned` : undefined}
             />
