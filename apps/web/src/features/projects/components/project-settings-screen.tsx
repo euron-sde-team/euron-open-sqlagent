@@ -34,6 +34,13 @@ export function ProjectSettingsScreen() {
   const [rawTab, setTab] = useTabParam("project", TABS);
   // API keys are an admin's tool; everyone else lands on the project tab.
   const tab = rawTab === "api-keys" && project && !canAdmin ? "project" : rawTab;
+  // On a phone the tab strip scrolls sideways; keep the open tab in view.
+  const strip = React.useRef<HTMLDivElement>(null);
+  const ready = !query.isPending && !query.isError;
+  React.useEffect(() => {
+    const active = strip.current?.querySelector<HTMLElement>("[aria-selected=true]");
+    if (active && strip.current) strip.current.scrollLeft = Math.max(0, active.offsetLeft - 16);
+  }, [tab, ready]);
 
   return (
     <>
@@ -46,7 +53,7 @@ export function ProjectSettingsScreen() {
         </div>
       ) : (
         <Tabs value={tab} onValueChange={(v) => setTab(String(v))}>
-          <div className="no-scrollbar -mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+          <div ref={strip} className="no-scrollbar relative -mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
             <TabsList className="flex-nowrap">
               <TabsTrigger value="project">
                 <SlidersHorizontalIcon />

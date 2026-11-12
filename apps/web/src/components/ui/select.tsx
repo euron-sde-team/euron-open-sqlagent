@@ -107,13 +107,14 @@ export interface SelectOption {
 
 /**
  * The common case: a single value from a flat option list. The trigger shows the
- * option's label (not its raw value), and `""` means "nothing selected".
+ * option's label (not its raw value), and `""` means "nothing selected". An option whose
+ * value is `""` (like "All databases") labels that state instead of the placeholder.
  */
 function SimpleSelect({
   value,
   onValueChange,
   options,
-  placeholder = "Select",
+  placeholder,
   id,
   size,
   className,
@@ -131,6 +132,7 @@ function SimpleSelect({
   "aria-label"?: string;
 }) {
   const items = React.useMemo(() => options.map((o) => ({ value: o.value, label: o.label })), [options]);
+  const emptyLabel = placeholder ?? options.find((o) => o.value === "")?.label ?? "Select";
   return (
     <Select
       items={items}
@@ -139,7 +141,7 @@ function SimpleSelect({
       disabled={disabled}
     >
       <SelectTrigger id={id} size={size} className={className} aria-label={ariaLabel}>
-        <SelectValue placeholder={placeholder} />
+        <SelectValue placeholder={emptyLabel} />
       </SelectTrigger>
       <SelectContent>
         {options.map((o) => (
