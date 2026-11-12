@@ -568,7 +568,9 @@ paths:
         schema:
           type: string
           format: uuid
+          description: The project
           title: Project Id
+        description: The project
       responses:
         '200':
           description: Successful Response
@@ -594,7 +596,9 @@ paths:
         schema:
           type: string
           format: uuid
+          description: The project
           title: Project Id
+        description: The project
       requestBody:
         required: true
         content:
@@ -626,7 +630,9 @@ paths:
         schema:
           type: string
           format: uuid
+          description: The project
           title: Project Id
+        description: The project
       responses:
         '204':
           description: Successful Response
@@ -649,7 +655,9 @@ paths:
         schema:
           type: string
           format: uuid
+          description: The project
           title: Project Id
+        description: The project
       responses:
         '200':
           description: Successful Response
@@ -678,7 +686,9 @@ paths:
         schema:
           type: string
           format: uuid
+          description: The project
           title: Project Id
+        description: The project
       requestBody:
         required: true
         content:
@@ -711,7 +721,9 @@ paths:
         schema:
           type: string
           format: uuid
+          description: The project
           title: Project Id
+        description: The project
       - name: user_id
         in: path
         required: true
@@ -750,7 +762,9 @@ paths:
         schema:
           type: string
           format: uuid
+          description: The project
           title: Project Id
+        description: The project
       - name: user_id
         in: path
         required: true
@@ -780,7 +794,9 @@ paths:
         schema:
           type: string
           format: uuid
+          description: The project
           title: Project Id
+        description: The project
       responses:
         '200':
           description: Successful Response
@@ -809,7 +825,9 @@ paths:
         schema:
           type: string
           format: uuid
+          description: The project
           title: Project Id
+        description: The project
       requestBody:
         required: true
         content:
@@ -842,7 +860,9 @@ paths:
         schema:
           type: string
           format: uuid
+          description: The project
           title: Project Id
+        description: The project
       - name: key_id
         in: path
         required: true
@@ -869,27 +889,53 @@ paths:
       - providers
       summary: Model providers of the project
       operationId: list_providers_api_v1_projects__project_id__providers_get
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       responses:
         '200':
           description: Successful Response
           content:
             application/json:
               schema:
+                type: array
                 items:
                   $ref: '#/components/schemas/ProviderOut'
-                type: array
                 title: Response List Providers Api V1 Projects  Project Id  Providers Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
     post:
       tags:
       - providers
       summary: Add a model provider with your own key (admins). The first one becomes the default
       operationId: create_provider_api_v1_projects__project_id__providers_post
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/ProviderCreate'
-        required: true
       responses:
         '201':
           description: Successful Response
@@ -917,6 +963,15 @@ paths:
           type: string
           format: uuid
           title: Provider Id
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       requestBody:
         required: true
         content:
@@ -949,6 +1004,15 @@ paths:
           type: string
           format: uuid
           title: Provider Id
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       responses:
         '204':
           description: Successful Response
@@ -972,6 +1036,15 @@ paths:
           type: string
           format: uuid
           title: Provider Id
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       responses:
         '200':
           description: Successful Response
@@ -991,27 +1064,53 @@ paths:
       - connections
       summary: Database connections
       operationId: list_connections_api_v1_projects__project_id__connections_get
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       responses:
         '200':
           description: Successful Response
           content:
             application/json:
               schema:
+                type: array
                 items:
                   $ref: '#/components/schemas/ConnectionOut'
-                type: array
                 title: Response List Connections Api V1 Projects  Project Id  Connections Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
     post:
       tags:
       - connections
       summary: Add a PostgreSQL or MySQL database (the password is sealed, never returned)
       operationId: create_connection_api_v1_projects__project_id__connections_post
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/ServerConnection'
-        required: true
       responses:
         '201':
           description: Successful Response
@@ -1031,12 +1130,22 @@ paths:
       - connections
       summary: Add a SQLite database file
       operationId: create_sqlite_api_v1_projects__project_id__connections_sqlite_post
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       requestBody:
+        required: true
         content:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/Body_create_sqlite_api_v1_projects__project_id__connections_sqlite_post'
-        required: true
       responses:
         '201':
           description: Successful Response
@@ -1056,12 +1165,22 @@ paths:
       - connections
       summary: 'Test a connection before saving it: real latency, server version, read-only'
       operationId: test_unsaved_api_v1_projects__project_id__connections_test_post
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/ServerConnection'
-        required: true
       responses:
         '200':
           description: Successful Response
@@ -1089,6 +1208,15 @@ paths:
           type: string
           format: uuid
           title: Connection Id
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       responses:
         '200':
           description: Successful Response
@@ -1115,6 +1243,15 @@ paths:
           type: string
           format: uuid
           title: Connection Id
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       requestBody:
         required: true
         content:
@@ -1147,6 +1284,15 @@ paths:
           type: string
           format: uuid
           title: Connection Id
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       responses:
         '204':
           description: Successful Response
@@ -1170,6 +1316,15 @@ paths:
           type: string
           format: uuid
           title: Connection Id
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       responses:
         '200':
           description: Successful Response
@@ -1198,6 +1353,15 @@ paths:
           type: string
           format: uuid
           title: Connection Id
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       responses:
         '200':
           description: Successful Response
@@ -1225,6 +1389,15 @@ paths:
           type: string
           format: uuid
           title: Connection Id
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       responses:
         '200':
           description: Successful Response
@@ -1248,12 +1421,22 @@ paths:
         generated SQL, whether the SQL guard accepted it, the result''s first page and a chart suggestion.
         If it is not ready within `wait`, the question comes back `queued` or `running`: poll `GET /messages/{id}`.'
       operationId: ask_api_v1_projects__project_id__chat_post
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/AskRequest'
-        required: true
       responses:
         '201':
           description: Successful Response
@@ -1281,6 +1464,15 @@ paths:
           type: string
           format: uuid
           title: Message Id
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       - name: wait
         in: query
         required: false
@@ -1321,6 +1513,15 @@ paths:
       summary: Conversations, most recent first
       operationId: list_conversations_api_v1_projects__project_id__conversations_get
       parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       - name: connection_id
         in: query
         required: false
@@ -1385,6 +1586,15 @@ paths:
           type: string
           format: uuid
           title: Conversation Id
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       responses:
         '200':
           description: Successful Response
@@ -1411,6 +1621,15 @@ paths:
           type: string
           format: uuid
           title: Conversation Id
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       requestBody:
         required: true
         content:
@@ -1443,6 +1662,15 @@ paths:
           type: string
           format: uuid
           title: Conversation Id
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       responses:
         '204':
           description: Successful Response
@@ -1458,12 +1686,22 @@ paths:
       - sql
       summary: Write SQL for a question against the connection's real schema (not executed)
       operationId: generate_api_v1_projects__project_id__sql_generate_post
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/GenerateRequest'
-        required: true
       responses:
         '200':
           description: Successful Response
@@ -1483,12 +1721,22 @@ paths:
       - sql
       summary: 'Run the SQL guard over a query: is it exactly one read-only SELECT?'
       operationId: validate_api_v1_projects__project_id__sql_validate_post
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/SqlInput'
-        required: true
       responses:
         '200':
           description: Successful Response
@@ -1508,12 +1756,22 @@ paths:
       - sql
       summary: Explain any query in plain language (never executed)
       operationId: explain_api_v1_projects__project_id__sql_explain_post
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/ExplainRequest'
-        required: true
       responses:
         '200':
           description: Successful Response
@@ -1533,12 +1791,22 @@ paths:
       - sql
       summary: 'Run a read-only query: guarded, on a read-only connection, under its limits'
       operationId: execute_api_v1_projects__project_id__sql_execute_post
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/ExecuteRequest'
-        required: true
       responses:
         '200':
           description: Successful Response
@@ -1559,6 +1827,15 @@ paths:
       summary: Queries run in the project, newest first
       operationId: list_executions_api_v1_projects__project_id__executions_get
       parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       - name: connection_id
         in: query
         required: false
@@ -1630,6 +1907,15 @@ paths:
           type: string
           format: uuid
           title: Execution Id
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       responses:
         '200':
           description: Successful Response
@@ -1657,6 +1943,15 @@ paths:
           type: string
           format: uuid
           title: Execution Id
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       - name: offset
         in: query
         required: false
@@ -1701,6 +1996,15 @@ paths:
           type: string
           format: uuid
           title: Execution Id
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       responses:
         '200':
           description: Successful Response
@@ -1718,12 +2022,22 @@ paths:
       - charts
       summary: Which chart (bar, line, pie) fits a result's shape, if any
       operationId: suggest_chart_api_v1_projects__project_id__charts_suggest_post
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/SuggestRequest'
-        required: true
       responses:
         '200':
           description: Successful Response
@@ -1744,6 +2058,15 @@ paths:
       summary: Saved questions, most used first
       operationId: list_templates_api_v1_projects__project_id__templates_get
       parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       - name: connection_id
         in: query
         required: false
@@ -1774,6 +2097,16 @@ paths:
       - templates
       summary: Save a question
       operationId: create_api_v1_projects__project_id__templates_post
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       requestBody:
         required: true
         content:
@@ -1799,12 +2132,22 @@ paths:
       - templates
       summary: Save an asked question (and its answered SQL) as a template
       operationId: from_message_api_v1_projects__project_id__templates_from_message_post
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/TemplateFromMessage'
-        required: true
       responses:
         '201':
           description: Successful Response
@@ -1832,6 +2175,15 @@ paths:
           type: string
           format: uuid
           title: Template Id
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       requestBody:
         required: true
         content:
@@ -1864,6 +2216,15 @@ paths:
           type: string
           format: uuid
           title: Template Id
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       responses:
         '204':
           description: Successful Response
@@ -1887,6 +2248,15 @@ paths:
           type: string
           format: uuid
           title: Template Id
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       requestBody:
         required: true
         content:
@@ -1912,6 +2282,16 @@ paths:
       - overview
       summary: The project at a glance
       operationId: overview_api_v1_projects__project_id__overview_get
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       responses:
         '200':
           description: Successful Response
@@ -1919,6 +2299,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Overview'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /api/v1/projects/{project_id}/usage:
     get:
       tags:
@@ -1926,6 +2312,15 @@ paths:
       summary: Questions, queries and tokens by day, connection and model
       operationId: usage_api_v1_projects__project_id__usage_get
       parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       - name: days
         in: query
         required: false
@@ -1957,6 +2352,15 @@ paths:
         person's questions and queries), and by action prefix (`query.`).
       operationId: project_audit_api_v1_projects__project_id__audit_logs_get
       parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The project
+          title: Project Id
+        description: The project
       - name: cursor
         in: query
         required: false

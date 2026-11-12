@@ -111,6 +111,8 @@ async def execute(
         execution.error = exc.message
         execution.error_code = exc.code
         metrics.GUARD_REFUSALS.labels(exc.code).inc()
+        # One line per refusal: CloudWatch counts them (observability module).
+        log.info("query refused", extra={"code": exc.code, "connection": str(conn.id)})
         await _record(session, conn, execution, actor, model)
         return Outcome(execution, rows)
     execution.sql = verdict.sql

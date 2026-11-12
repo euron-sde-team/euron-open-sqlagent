@@ -24,7 +24,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from typing import Annotated, Any
 
-from fastapi import Depends, Request
+from fastapi import Depends, Path, Request
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -146,36 +146,44 @@ async def resolve(
     return Principal(project, role, request.state.actor)
 
 
-def project_role(role: str, scope: str = "read") -> Callable[..., Coroutine[Any, Any, Principal]]:
-    """A dependency: the caller holds at least ``role`` in the project (people) or the
-    ``scope`` (API keys). The project comes from a ``project_id`` path parameter when the
-    route has one, else from the API key or the ``X-Project-Id`` header."""
-
-    async def dependency(
-        request: Request, container: ContainerDep, session: SessionDep
-    ) -> Principal:
-        raw = request.path_params.get("project_id")
-        try:
-            path_project = uuid.UUID(str(raw)) if raw else None
-        except ValueError:
-            raise NotFoundError("Project not found") from None
-        p = await resolve(request, container, session, path_project)
-        if p.key is not None:
-            if scope not in (p.key.scopes or []):
-                raise PermissionDeniedError(
-                    f"This API key lacks the {scope!r} scope", code="insufficient_scope"
-                )
-            return p
-        if not p.at_least(role):
+def _check(p: Principal, role: str, scope: str) -> Principal:
+    if p.key is not None:
+        if scope not in (p.key.scopes or []):
             raise PermissionDeniedError(
-                f"This action needs the {role} role in this project", code="insufficient_role"
+                f"This API key lacks the {scope!r} scope", code="insufficient_scope"
             )
         return p
+    if not p.at_least(role):
+        raise PermissionDeniedError(
+            f"This action needs the {role} role in this project", code="insufficient_role"
+        )
+    return p
+
+
+def project_role(role: str, scope: str = "read") -> Callable[..., Coroutine[Any, Any, Principal]]:
+    """A dependency: the caller holds at least ``role`` in the path's project (people) or
+    the ``scope`` (API keys). The path parameter is declared here, so every project route
+    documents it in the OpenAPI document."""
+
+    async def dependency(
+        request: Request,
+        container: ContainerDep,
+        session: SessionDep,
+        project_id: Annotated[uuid.UUID, Path(description="The project")],
+    ) -> Principal:
+        return _check(await resolve(request, container, session, project_id), role, scope)
 
     return dependency
+
+
+async def _current(request: Request, container: ContainerDep, session: SessionDep) -> Principal:
+    """The project an API key belongs to (or the ``X-Project-Id`` header's), for routes
+    without a project in the path."""
+    return _check(await resolve(request, container, session, None), "viewer", "read")
 
 
 Viewer = Annotated[Principal, Depends(project_role("viewer", "read"))]
 Editor = Annotated[Principal, Depends(project_role("editor", "manage"))]
 Admin = Annotated[Principal, Depends(project_role("admin", "__admin_only__"))]
 Querier = Annotated[Principal, Depends(project_role("editor", "query"))]
+Current = Annotated[Principal, Depends(_current)]

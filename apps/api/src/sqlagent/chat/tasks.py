@@ -29,8 +29,11 @@ async def reap_leases(container: Container) -> int:
 @periodic("queue_gauges")
 async def queue_gauges(container: Container) -> int:
     async with container.db.sessionmaker() as session:
-        for status, n in (await queue.depth(session)).items():
-            metrics.QUEUE_DEPTH.labels(status).set(n)
+        depth = await queue.depth(session)
+    for status, n in depth.items():
+        metrics.QUEUE_DEPTH.labels(status).set(n)
+    # One line per tick: CloudWatch turns `queued` into the backlog metric (observability).
+    log.info("question queue", extra=depth)
     return 0
 
 

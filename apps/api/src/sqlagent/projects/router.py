@@ -8,7 +8,7 @@ from sqlagent.auth.dependencies import CurrentUser
 from sqlagent.core.deps import ContainerDep, SessionDep
 from sqlagent.core.schemas import Ack
 from sqlagent.projects import service
-from sqlagent.projects.access import Admin, Viewer
+from sqlagent.projects.access import Admin, Current, Viewer
 from sqlagent.projects.schemas import (
     ApiKeyCreate,
     ApiKeyCreated,
@@ -53,7 +53,7 @@ async def create_project(
     summary="The project of the API key in use (or of the X-Project-Id header)",
     description="Lets the SDK and the CLI find their project from the key alone.",
 )
-async def current_project(p: Viewer) -> ProjectOut:
+async def current_project(p: Current) -> ProjectOut:
     return _out(p.project, p.role)
 
 

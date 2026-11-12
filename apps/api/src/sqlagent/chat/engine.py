@@ -131,6 +131,10 @@ async def answer(container: Container, msg: ConversationMessage, owner: str) -> 
             return
         await session.commit()
     metrics.QUESTIONS.labels(str(final["status"])).inc()
+    log.info(
+        "question finished",
+        extra={"status": final["status"], "total_ms": final["total_ms"], "message_id": str(msg.id)},
+    )
     metrics.QUESTION_SECONDS.observe(time.perf_counter() - started)
     await container.pubsub.publish(queue.message_channel(msg.id), str(final["status"]))
 
