@@ -162,6 +162,8 @@ _STATEMENT_KEYS = frozenset(
         "uncache",
         "refresh",
         "values",
+        "attach",
+        "detach",
     }
 )
 

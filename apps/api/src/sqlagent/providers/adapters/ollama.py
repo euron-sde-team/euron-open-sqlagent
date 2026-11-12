@@ -5,21 +5,15 @@ from __future__ import annotations
 
 from typing import Any
 
-import httpx
-
 from sqlagent.providers.adapters.base import (
     Adapter,
     call,
-    ndjson,
-    raise_for_status,
-    transport_error,
 )
 from sqlagent.providers.types import (
     Message,
     ModelRequest,
     ModelResponse,
     OnDelta,
-    ProviderError,
     ToolCall,
     Usage,
 )
@@ -43,7 +37,7 @@ def payload(req: ModelRequest) -> dict[str, Any]:
     body: dict[str, Any] = {
         "model": req.model,
         "messages": [to_wire(m) for m in req.messages],
-        "stream": req.stream,
+        "stream": False,
         "options": options,
     }
     if req.tools and req.tool_choice == "auto":
@@ -88,46 +82,15 @@ class OllamaAdapter(Adapter):
         return sorted(str(m.get("name")) for m in body.get("models") or [] if m.get("name"))
 
     async def complete(self, req: ModelRequest, on_delta: OnDelta | None = None) -> ModelResponse:
-        if not req.stream:
-            body = await self._post(f"{self.base}/api/chat", payload(req), self._headers())
-            msg = body.get("message") or {}
-            calls = _calls(msg, 0)
-            return ModelResponse(
-                text=msg.get("content") or "",
-                tool_calls=calls,
-                usage=_usage(body),
-                finish_reason="tool_calls"
-                if calls
-                else ("length" if body.get("done_reason") == "length" else "stop"),
-                model=body.get("model") or req.model,
-            )
-        out = ModelResponse(model=req.model)
-        text: list[str] = []
-        try:
-            async with self.http.stream(
-                "POST",
-                f"{self.base}/api/chat",
-                json=payload(req),
-                headers={**self.config.headers, **self._headers()},
-                timeout=self.config.timeout_s,
-            ) as resp:
-                await raise_for_status(resp)
-                async for chunk in ndjson(resp):
-                    if chunk.get("error"):
-                        raise ProviderError(str(chunk["error"]), retryable=True)
-                    msg = chunk.get("message") or {}
-                    if msg.get("content"):
-                        text.append(msg["content"])
-                        if on_delta:
-                            await on_delta(msg["content"])
-                    out.tool_calls.extend(_calls(msg, len(out.tool_calls)))
-                    if chunk.get("done"):
-                        out.usage = _usage(chunk)
-                        if chunk.get("done_reason") == "length":
-                            out.finish_reason = "length"
-        except httpx.HTTPError as exc:
-            raise transport_error(exc) from exc
-        out.text = "".join(text)
-        if out.tool_calls:
-            out.finish_reason = "tool_calls"
-        return out
+        body = await self._post(f"{self.base}/api/chat", payload(req), self._headers())
+        msg = body.get("message") or {}
+        calls = _calls(msg, 0)
+        return ModelResponse(
+            text=msg.get("content") or "",
+            tool_calls=calls,
+            usage=_usage(body),
+            finish_reason="tool_calls"
+            if calls
+            else ("length" if body.get("done_reason") == "length" else "stop"),
+            model=body.get("model") or req.model,
+        )

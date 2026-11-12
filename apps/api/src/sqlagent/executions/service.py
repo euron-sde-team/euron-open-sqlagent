@@ -98,6 +98,9 @@ async def execute(
         actor_id=actor.id,
         actor_label=actor.email or actor.role,
         columns=[],
+        row_count=0,
+        truncated=False,
+        duration_ms=0.0,
     )
     rows: list[list[Any]] = []
     try:

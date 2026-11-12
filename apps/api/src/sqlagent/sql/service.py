@@ -66,7 +66,6 @@ async def _call(
                 messages=messages,
                 max_tokens=max_tokens,
                 temperature=0.0,
-                stream=False,
             ),
         )
     except ProviderError as exc:

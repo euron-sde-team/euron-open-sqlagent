@@ -135,7 +135,7 @@ def _list(items: list[str]) -> str:
 def describe(sql: str, dialect: str) -> str:
     """A plain-language description of ``sql`` from its syntax tree."""
     a = analyze(sql, dialect)
-    if a.statement in ("unparsed", "empty"):
+    if a.statement in ("unparsed", "empty") or a.refusal_code == "parse_error":
         return f"This text is not a query SQLAgent can read: {a.refusal}."
     if not a.read_only and a.statement in _VERB:
         target = _list(a.tables) or "a table"

@@ -3,6 +3,7 @@ project members are always people of the project's organization."""
 
 from __future__ import annotations
 
+import logging
 import uuid
 from collections.abc import Sequence
 from datetime import UTC, datetime, timedelta
@@ -11,6 +12,8 @@ from sqlalchemy import func, literal, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from sqlagent.audit.service import Actor, audit
+from sqlagent.core import mail
+from sqlagent.core.config import Settings
 from sqlagent.core.errors import ConflictError, NotFoundError, PermissionDeniedError
 from sqlagent.core.security import generate_api_key
 from sqlagent.core.text import slugify
@@ -26,6 +29,8 @@ from sqlagent.projects.schemas import (
     ProjectUpdate,
 )
 from sqlagent.users.models import User
+
+log = logging.getLogger("sqlagent.projects")
 
 
 async def unique_slug(session: AsyncSession, org_id: uuid.UUID, base: str) -> str:
@@ -209,6 +214,28 @@ async def add_member(
     await session.commit()
     await session.refresh(member)
     return member, user
+
+
+ROLE_WORDS = {
+    "viewer": "read its connections, schemas, conversations and results",
+    "editor": "ask questions and run read-only SQL on its databases",
+    "admin": "ask questions, manage connections, members, API keys and model providers",
+}
+
+
+async def notify_member(settings: Settings, p: Principal, user: User, role: str) -> None:
+    """Tell a person they were added to a project. Best effort: a mail outage never undoes
+    the membership (it is logged and the admin can share the link themselves)."""
+    link = f"{settings.public_url.rstrip('/')}/projects/{p.project_id}"
+    text = (
+        f"Hello {user.name},\n\n{p.actor.email or 'An admin'} added you to the SQLAgent "
+        f"project {p.project.name} as {role}. You can now {ROLE_WORDS.get(role, 'use it')}.\n\n"
+        f"Open it: {link}\n"
+    )
+    try:
+        await mail.send(settings, user.email, f"You were added to {p.project.name}", text)
+    except mail.MailError:
+        log.warning("member notice not sent", extra={"project": str(p.project_id)})
 
 
 async def _owners(session: AsyncSession, project_id: uuid.UUID) -> int:

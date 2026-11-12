@@ -117,16 +117,12 @@ class BodySizeLimitMiddleware:
         limit = self.settings.max_body_bytes
         path = scope.get("path", "")
         headers = dict(scope.get("headers") or [])
-        streaming = False
         if _UPLOAD_PATH.match(path) and _may_send_large(headers, self.settings.session_secret):
             # Signed-in callers only: anonymous requests keep the small limit.
             limit = self.settings.max_upload_bytes
         length = headers.get(b"content-length", b"")
         if length.isdigit() and int(length) > limit:
             await self._refuse(send, limit)
-            return
-        if streaming:
-            await self._stream(scope, receive, send, limit)
             return
         chunks: list[bytes] = []
         size = 0
@@ -153,45 +149,14 @@ class BodySizeLimitMiddleware:
 
         await self.app(scope, replay, send)
 
-    async def _stream(self, scope: Scope, receive: Receive, send: Send, limit: int) -> None:
-        """Pass the body through, counting it. Past the limit the app sees a disconnect
-        (it stops reading) and the client gets 413, unless a response already started."""
-        size = 0
-        started = False
-        refused = False
-
-        async def counted() -> Message:
-            nonlocal size, refused
-            if refused:
-                return {"type": "http.disconnect"}
-            message = await receive()
-            if message["type"] == "http.request":
-                size += len(message.get("body", b""))
-                if size > limit:
-                    refused = True
-                    if not started:
-                        await self._refuse(send, limit)
-                    return {"type": "http.disconnect"}
-            return message
-
-        async def guarded_send(message: Message) -> None:
-            nonlocal started
-            if refused:
-                return  # the 413 already went out
-            if message["type"] == "http.response.start":
-                started = True
-            await send(message)
-
-        await self.app(scope, counted, guarded_send)
-
     async def _refuse(self, send: Send, limit: int) -> None:
         body = json.dumps(
             {
                 "error": {
                     "code": "payload_too_large",
                     "type": "invalid_request_error",
-                    "message": f"The request body is larger than {limit:,} bytes. Split "
-                    "it, use a background job, or raise MAX_BODY_BYTES",
+                    "message": f"The request body is larger than {limit:,} bytes. Shorten "
+                    "it, or raise MAX_BODY_BYTES (MAX_UPLOAD_BYTES for SQLite files)",
                     "details": {"limit_bytes": limit},
                 }
             }

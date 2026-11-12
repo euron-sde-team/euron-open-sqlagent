@@ -1,11 +1,11 @@
-"""Shared plumbing for provider adapters: HTTP errors, SSE and NDJSON streams, argument
-parsing. Each adapter only translates its own wire format."""
+"""Shared plumbing for provider adapters: HTTP errors and argument parsing. Each adapter
+only translates its own wire format. SQLAgent waits for whole answers (a query is only
+useful complete), so requests are never streamed."""
 
 from __future__ import annotations
 
 import abc
 import json
-from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -76,41 +76,6 @@ async def raise_for_status(resp: httpx.Response) -> None:
         retry_after_s=_retry_after(resp),
         code=code,
     )
-
-
-async def sse_events(resp: httpx.Response) -> AsyncIterator[tuple[str | None, str]]:
-    """``(event, data)`` pairs of a server-sent event stream."""
-    event: str | None = None
-    data: list[str] = []
-    async for line in resp.aiter_lines():
-        if line == "":
-            if data:
-                yield event, "\n".join(data)
-            event, data = None, []
-            continue
-        if line.startswith(":"):
-            continue
-        name, _, value = line.partition(":")
-        value = value[1:] if value.startswith(" ") else value
-        if name == "event":
-            event = value
-        elif name == "data":
-            data.append(value)
-    if data:
-        yield event, "\n".join(data)
-
-
-async def ndjson(resp: httpx.Response) -> AsyncIterator[dict[str, Any]]:
-    async for line in resp.aiter_lines():
-        if line.strip():
-            try:
-                value = json.loads(line)
-            except ValueError as exc:
-                raise ProviderError(
-                    "The provider sent a malformed stream line", retryable=True
-                ) from exc
-            if isinstance(value, dict):
-                yield value
 
 
 def transport_error(exc: Exception) -> ProviderError:

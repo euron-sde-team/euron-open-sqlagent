@@ -47,6 +47,16 @@ async def create_project(
     return _out(await service.create_project(session, body, user, request.state.actor), "admin")
 
 
+@router.get(
+    "/current",
+    response_model=ProjectOut,
+    summary="The project of the API key in use (or of the X-Project-Id header)",
+    description="Lets the SDK and the CLI find their project from the key alone.",
+)
+async def current_project(p: Viewer) -> ProjectOut:
+    return _out(p.project, p.role)
+
+
 @router.get("/{project_id}", response_model=ProjectOut, summary="One project")
 async def get_project(project_id: uuid.UUID, p: Viewer) -> ProjectOut:
     return _out(p.project, p.role)
@@ -77,9 +87,10 @@ async def list_members(project_id: uuid.UUID, p: Viewer, session: SessionDep) ->
     "/{project_id}/members", response_model=MemberOut, status_code=201, summary="Add a member"
 )
 async def add_member(
-    project_id: uuid.UUID, body: MemberAdd, p: Admin, session: SessionDep
+    project_id: uuid.UUID, body: MemberAdd, p: Admin, session: SessionDep, container: ContainerDep
 ) -> MemberOut:
     m, u = await service.add_member(session, p, body)
+    await service.notify_member(container.settings, p, u, m.role)
     return MemberOut(user_id=u.id, email=u.email, name=u.name, role=m.role, created_at=m.created_at)
 
 

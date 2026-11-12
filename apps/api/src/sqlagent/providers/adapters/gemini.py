@@ -4,18 +4,12 @@ adapter numbers them, and tool schemas are reduced to the OpenAPI subset Gemini 
 
 from __future__ import annotations
 
-import json
 import uuid
 from typing import Any
-
-import httpx
 
 from sqlagent.providers.adapters.base import (
     Adapter,
     call,
-    raise_for_status,
-    sse_events,
-    transport_error,
 )
 from sqlagent.providers.types import (
     Message,
@@ -161,61 +155,19 @@ class GeminiAdapter(Adapter):
 
     async def complete(self, req: ModelRequest, on_delta: OnDelta | None = None) -> ModelResponse:
         model = req.model.removeprefix("models/")
-        if not req.stream:
-            body = await self._post(
-                f"{self.base}/v1beta/models/{model}:generateContent", payload(req), self._headers()
-            )
-            cands = body.get("candidates") or []
-            if not cands:
-                raise ProviderError("The provider returned no candidates", retryable=True)
-            parts = (cands[0].get("content") or {}).get("parts") or []
-            calls = _calls_of(parts)
-            reason = cands[0].get("finishReason") or "STOP"
-            return ModelResponse(
-                text="".join(
-                    p.get("text", "") for p in parts if "text" in p and not p.get("thought")
-                ),
-                tool_calls=calls,
-                usage=_usage(body.get("usageMetadata")),
-                finish_reason="tool_calls" if calls else _FINISH.get(reason, reason.lower()),
-                model=body.get("modelVersion") or model,
-            )
-        out = ModelResponse(model=model)
-        text: list[str] = []
-        try:
-            async with self.http.stream(
-                "POST",
-                f"{self.base}/v1beta/models/{model}:streamGenerateContent?alt=sse",
-                json=payload(req),
-                headers={**self.config.headers, **self._headers()},
-                timeout=self.config.timeout_s,
-            ) as resp:
-                await raise_for_status(resp)
-                async for _, data in sse_events(resp):
-                    try:
-                        chunk = json.loads(data)
-                    except ValueError as exc:
-                        raise ProviderError(
-                            "The provider sent a malformed stream event", retryable=True
-                        ) from exc
-                    if chunk.get("usageMetadata"):
-                        out.usage = _usage(chunk["usageMetadata"])
-                    out.model = chunk.get("modelVersion") or out.model
-                    for cand in chunk.get("candidates") or []:
-                        parts = (cand.get("content") or {}).get("parts") or []
-                        for p in parts:
-                            if "text" in p and not p.get("thought") and p["text"]:
-                                text.append(p["text"])
-                                if on_delta:
-                                    await on_delta(p["text"])
-                        out.tool_calls.extend(_calls_of(parts))
-                        if cand.get("finishReason"):
-                            out.finish_reason = _FINISH.get(
-                                cand["finishReason"], cand["finishReason"].lower()
-                            )
-        except httpx.HTTPError as exc:
-            raise transport_error(exc) from exc
-        out.text = "".join(text)
-        if out.tool_calls:
-            out.finish_reason = "tool_calls"
-        return out
+        body = await self._post(
+            f"{self.base}/v1beta/models/{model}:generateContent", payload(req), self._headers()
+        )
+        cands = body.get("candidates") or []
+        if not cands:
+            raise ProviderError("The provider returned no candidates", retryable=True)
+        parts = (cands[0].get("content") or {}).get("parts") or []
+        calls = _calls_of(parts)
+        reason = cands[0].get("finishReason") or "STOP"
+        return ModelResponse(
+            text="".join(p.get("text", "") for p in parts if "text" in p and not p.get("thought")),
+            tool_calls=calls,
+            usage=_usage(body.get("usageMetadata")),
+            finish_reason="tool_calls" if calls else _FINISH.get(reason, reason.lower()),
+            model=body.get("modelVersion") or model,
+        )

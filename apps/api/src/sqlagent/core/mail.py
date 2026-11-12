@@ -1,8 +1,7 @@
-"""Outgoing mail (alert emails), one backend chosen by ``MAIL_BACKEND``.
+"""Outgoing mail (project invitation notices), one backend chosen by ``MAIL_BACKEND``.
 
-* ``log``: nothing leaves the process. A line without the body is logged (the body may
-  quote data values) and the message is kept in a small in-memory outbox, which
-  development and the tests read.
+* ``log``: nothing leaves the process. A line without the body is logged and the message
+  is kept in a small in-memory outbox, which development and the tests read.
 * ``smtp``: plain SMTP (Mailpit locally on ``SMTP_HOST``:``SMTP_PORT``, any relay in
   production), through the standard library in a worker thread.
 * ``ses``: Amazon SES through boto3, in a worker thread.

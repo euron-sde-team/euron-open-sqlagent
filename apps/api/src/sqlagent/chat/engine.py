@@ -85,8 +85,11 @@ async def answer(container: Container, msg: ConversationMessage, owner: str) -> 
     started = time.perf_counter()
     actor = Actor(msg.actor_id, msg.actor_label, msg.actor_role)
     final: dict[str, Any] = {}
+    # Filled as the pipeline goes, so a failure still records the model and tokens used.
+    partial: dict[str, Any] = {}
+    project_id, connection_id = msg.project_id, msg.connection_id
     async with container.db.sessionmaker() as session:
-        conn = await session.get(Connection, msg.connection_id)
+        conn = await session.get(Connection, connection_id)
         conversation = await session.get(Conversation, msg.conversation_id)
         if conn is None or conversation is None:
             final = {
@@ -96,14 +99,14 @@ async def answer(container: Container, msg: ConversationMessage, owner: str) -> 
             }
         else:
             try:
-                final = await _answer(container, session, conn, conversation, msg, actor)
+                final = await _answer(container, session, conn, conversation, msg, actor, partial)
             except AppError as exc:
                 await session.rollback()
-                final = {"status": "failed", "error": exc.message, "error_code": exc.code}
+                final = partial | {"status": "failed", "error": exc.message, "error_code": exc.code}
             except Exception:
                 log.exception("question failed", extra={"message_id": str(msg.id)})
                 await session.rollback()
-                final = {
+                final = partial | {
                     "status": "failed",
                     "error": "Something went wrong while answering. Ask again",
                     "error_code": "internal_error",
@@ -112,8 +115,8 @@ async def answer(container: Container, msg: ConversationMessage, owner: str) -> 
         if conn is not None:
             await usage.record(
                 session,
-                conn.project_id,
-                conn.id,
+                project_id,
+                connection_id,
                 str(final.get("model") or ""),
                 questions=1,
                 answered=int(final["status"] == "answered"),
@@ -139,8 +142,8 @@ async def _answer(
     conversation: Conversation,
     msg: ConversationMessage,
     actor: Actor,
+    out: dict[str, Any],
 ) -> dict[str, Any]:
-    out: dict[str, Any] = {}
     if msg.preset_sql:
         sql = msg.preset_sql
         out["explanation"] = "The saved query of this template. " + describe(sql, conn.kind)

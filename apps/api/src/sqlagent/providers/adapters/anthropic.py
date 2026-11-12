@@ -2,24 +2,17 @@
 
 from __future__ import annotations
 
-import json
 from typing import Any
-
-import httpx
 
 from sqlagent.providers.adapters.base import (
     Adapter,
     call,
-    raise_for_status,
-    sse_events,
-    transport_error,
 )
 from sqlagent.providers.types import (
     Message,
     ModelRequest,
     ModelResponse,
     OnDelta,
-    ProviderError,
     Usage,
 )
 
@@ -70,7 +63,7 @@ def payload(req: ModelRequest) -> dict[str, Any]:
         "model": req.model,
         "messages": turns,
         "max_tokens": req.max_tokens,
-        "stream": req.stream,
+        "stream": False,
     }
     if system:
         body["system"] = system
@@ -129,72 +122,6 @@ class AnthropicAdapter(Adapter):
         )
 
     async def complete(self, req: ModelRequest, on_delta: OnDelta | None = None) -> ModelResponse:
-        if not req.stream:
-            return parse_response(
-                await self._post(f"{self.base}/v1/messages", payload(req), self._headers())
-            )
-        out = ModelResponse()
-        text: list[str] = []
-        blocks: dict[int, dict[str, str]] = {}
-        try:
-            async with self.http.stream(
-                "POST",
-                f"{self.base}/v1/messages",
-                json=payload(req),
-                headers={**self.config.headers, **self._headers()},
-                timeout=self.config.timeout_s,
-            ) as resp:
-                await raise_for_status(resp)
-                async for event, data in sse_events(resp):
-                    try:
-                        ev = json.loads(data)
-                    except ValueError as exc:
-                        raise ProviderError(
-                            "The provider sent a malformed stream event", retryable=True
-                        ) from exc
-                    kind = ev.get("type") or event
-                    if kind == "error":
-                        err = ev.get("error") or {}
-                        overloaded = err.get("type") in (
-                            "overloaded_error",
-                            "rate_limit_error",
-                            "api_error",
-                        )
-                        raise ProviderError(
-                            str(err.get("message", "stream error")), retryable=overloaded
-                        )
-                    if kind == "message_start":
-                        msg = ev.get("message") or {}
-                        out.model = msg.get("model") or ""
-                        out.usage = _usage(msg.get("usage"))
-                    elif kind == "content_block_start":
-                        b = ev.get("content_block") or {}
-                        if b.get("type") == "tool_use":
-                            blocks[int(ev.get("index", 0))] = {
-                                "id": b.get("id", ""),
-                                "name": b.get("name", ""),
-                                "args": "",
-                            }
-                    elif kind == "content_block_delta":
-                        d = ev.get("delta") or {}
-                        if d.get("type") == "text_delta" and d.get("text"):
-                            text.append(d["text"])
-                            if on_delta:
-                                await on_delta(d["text"])
-                        elif d.get("type") == "input_json_delta":
-                            slot = blocks.get(int(ev.get("index", 0)))
-                            if slot is not None:
-                                slot["args"] += d.get("partial_json") or ""
-                    elif kind == "message_delta":
-                        out.usage = _usage(ev.get("usage"), out.usage)
-                        reason = (ev.get("delta") or {}).get("stop_reason")
-                        if reason:
-                            out.finish_reason = _FINISH.get(reason, reason)
-        except httpx.HTTPError as exc:
-            raise transport_error(exc) from exc
-        out.text = "".join(text)
-        out.tool_calls = [
-            call(b["id"] or f"toolu_{i}", b["name"], b["args"] or "{}")
-            for i, b in sorted(blocks.items())
-        ]
-        return out
+        return parse_response(
+            await self._post(f"{self.base}/v1/messages", payload(req), self._headers())
+        )

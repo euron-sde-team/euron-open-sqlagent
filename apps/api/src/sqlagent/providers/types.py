@@ -50,7 +50,6 @@ class ModelRequest:
     temperature: float | None = None
     # "auto" lets the model choose; "none" forbids tools for this call.
     tool_choice: Literal["auto", "none"] = "auto"
-    stream: bool = True
 
 
 @dataclass(slots=True)
@@ -78,7 +77,7 @@ class ModelResponse:
     usage_reported: bool = True
 
 
-# Streaming callback: text as it is produced (tool call arguments are not streamed out).
+# A callback for text as it is produced (the mock calls it once with the whole answer).
 OnDelta = Callable[[str], Awaitable[None]]
 
 
