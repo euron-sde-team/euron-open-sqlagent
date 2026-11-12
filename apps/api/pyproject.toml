@@ -1,0 +1,117 @@
+[project]
+name = "sqlagent"
+version = "0.1.0"
+description = "Euron Open SQLAgent: a self-hosted database assistant that turns plain English into one validated, read-only SQL query, runs it on a read-only connection and shows the answer as a table or a chart."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12,<3.14"
+# One package for the API, the question worker and the scheduler.
+dependencies = [
+  "pydantic>=2.9",
+  "pydantic-settings>=2.6",
+  "orjson>=3.10",
+  "fastapi>=0.115,<1",
+  "uvicorn[standard]>=0.32",
+  "httpx>=0.28",
+  "pyjwt>=2.10",
+  "sqlalchemy[asyncio]>=2.1",
+  "asyncpg>=0.30",
+  "alembic>=1.14",
+  "redis>=5.2",
+  "argon2-cffi>=23.1",
+  "boto3>=1.35",
+  "cryptography>=43",
+  "prometheus-client>=0.21",
+  "opentelemetry-api>=1.28",
+  "opentelemetry-sdk>=1.28",
+  "opentelemetry-exporter-otlp-proto-http>=1.28",
+  "pyyaml>=6.0",
+  "python-multipart>=0.0.20",
+  # The SQL guard parses every query into an AST in the connection's dialect.
+  "sqlglot>=30",
+  # Connected databases (synchronous drivers: queries run in threads).
+  "psycopg[binary]>=3.2",
+  "pymysql>=1.1",
+]
+
+[project.scripts]
+sqlagent = "sqlagent.cli:main"
+
+[dependency-groups]
+dev = [
+  "pytest>=8.3",
+  "pytest-asyncio>=0.24",
+  "pytest-cov>=6.0",
+  "ruff>=0.8",
+  "mypy>=1.13",
+  "boto3-stubs[s3,kms,secretsmanager]>=1.35",
+  "asgi-lifespan>=2.1",
+  "types-pyyaml>=6.0",
+  "types-pymysql>=1.1",
+  # The SDK's tests run against the live test app.
+  "euron-sqlagent",
+]
+
+[tool.uv.sources]
+euron-sqlagent = { path = "../../sdk/python", editable = true }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/sqlagent", "src/mockai"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "S", "A", "C4", "SIM", "RUF", "ASYNC", "PT"]
+ignore = ["S101", "B008", "RUF012", "RUF001"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S105", "S106", "S311", "S603", "S608", "E501", "PT018", "PT022", "PT011", "S110", "ASYNC109"]
+# Pytest style rules do not apply outside tests (asserts there narrow types).
+"src/**" = ["PT"]
+"src/sqlagent/migrations/**" = ["E501", "UP", "I"]
+"src/mockai/**" = ["E501", "S311"]
+"src/sqlagent/demo/**" = ["E501", "S311", "S608", "S105"]
+# The deterministic planner and the prompt build SQL text; it is always guarded before use.
+"src/sqlagent/providers/mock/**" = ["S608"]
+"src/sqlagent/connections/sources.py" = ["S608"]
+
+[tool.mypy]
+strict = true
+python_version = "3.12"
+mypy_path = "src"
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = ["asgi_lifespan.*", "sqlglot.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
+testpaths = ["tests"]
+markers = [
+  "integration: needs Postgres, Redis, the demo source databases and the mock service (make test-integration)",
+]
+addopts = "-ra"
+# A test running longer than this gets every thread's stack dumped (it is not killed), so
+# a hang shows where it waits instead of only that it waits.
+faulthandler_timeout = 120
+
+[tool.coverage.run]
+source = ["sqlagent"]
+branch = true
+concurrency = ["greenlet", "thread"]
+# The demo seed is exercised by make demo.
+omit = ["*/migrations/*", "*/demo/*", "*/mockai/*"]
+
+[tool.coverage.report]
+skip_empty = true
+show_missing = true
