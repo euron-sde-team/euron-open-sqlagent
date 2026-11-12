@@ -1,0 +1,304 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Variants the shadcn "base-nova" primitives are written against. Base UI marks
+ * state with bare data attributes (data-open, data-checked, ...).
+ */
+@custom-variant data-open {
+  &:where([data-state="open"]),
+  &:where([data-open]:not([data-open="false"])) {
+    @slot;
+  }
+}
+@custom-variant data-closed {
+  &:where([data-state="closed"]),
+  &:where([data-closed]:not([data-closed="false"])) {
+    @slot;
+  }
+}
+@custom-variant data-checked {
+  &:where([data-state="checked"]),
+  &:where([data-checked]:not([data-checked="false"])) {
+    @slot;
+  }
+}
+@custom-variant data-unchecked {
+  &:where([data-state="unchecked"]),
+  &:where([data-unchecked]:not([data-unchecked="false"])) {
+    @slot;
+  }
+}
+@custom-variant data-disabled {
+  &:where([data-disabled="true"]),
+  &:where([data-disabled]:not([data-disabled="false"])) {
+    @slot;
+  }
+}
+@custom-variant data-active {
+  &:where([data-state="active"]),
+  &:where([data-active]:not([data-active="false"])) {
+    @slot;
+  }
+}
+@custom-variant data-highlighted {
+  &:where([data-highlighted]) {
+    @slot;
+  }
+}
+
+/*
+ * SQLAgent design tokens. Every color in the app comes from here: components use
+ * the semantic names (primary, savings, warning, danger, info, series-*), never a hex.
+ * Structure comes from fills, spacing and soft shadows; borders are hairlines
+ * reserved for inputs and table rules.
+ */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-soft: var(--primary-soft);
+  --color-secondary: var(--muted);
+  --color-secondary-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-subtle: var(--subtle);
+  --color-faint: var(--faint);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--foreground);
+  --color-destructive: var(--danger);
+  --color-border: var(--border);
+  --color-hairline: var(--hairline);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+
+  --color-savings: var(--savings);
+  --color-savings-soft: var(--savings-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-danger-foreground: var(--danger-foreground);
+  --color-code-bg: var(--code-bg);
+  --color-code-fg: var(--code-fg);
+  --color-code-muted: var(--code-muted);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-neutral-soft: var(--neutral-soft);
+
+  --color-series-1: var(--series-1);
+  --color-series-2: var(--series-2);
+  --color-series-3: var(--series-3);
+  --color-series-4: var(--series-4);
+  --color-chart-grid: var(--chart-grid);
+  --color-chart-axis: var(--chart-axis);
+
+  --font-sans: var(--font-sans-stack);
+  --font-mono: var(--font-mono-stack);
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+  --radius-2xl: 18px;
+
+  --shadow-xs: var(--elev-1);
+  --shadow-sm: var(--elev-1);
+  --shadow-md: var(--elev-2);
+  --shadow-lg: var(--elev-3);
+  --shadow-xl: var(--elev-4);
+}
+
+:root {
+  color-scheme: light;
+  --font-sans-stack: "Inter Variable", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono-stack: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --background: #f4f7f7;
+  --foreground: #0f1a1c;
+  --card: #ffffff;
+  --popover: #ffffff;
+  --sidebar: #ecf1f1;
+  --muted: #ebf0f0;
+  --accent: #e3eaea;
+  --muted-foreground: #52626a;
+  --subtle: #71808a;
+  --faint: #a1aeb4;
+  --border: #dfe7e8;
+  --hairline: #e8eeee;
+  --input: #d3dcde;
+  --ring: #0e7c6b;
+
+  /* SQLAgent jade: the accent for actions, links, focus and validated queries. */
+  --primary: #0e7c6b;
+  --primary-foreground: #ffffff;
+  --primary-soft: #ddf1ec;
+
+  --savings: #047857;
+  --savings-soft: #e2f5ec;
+  --warning: #b45309;
+  --warning-soft: #fdf0d9;
+  --danger: #c0234a;
+  --danger-soft: #fde8ed;
+  --danger-foreground: #ffffff;
+  --info: #0b6fb8;
+  --info-soft: #e2f0fb;
+  --neutral-soft: #e7eded;
+  /* Code and JSON slabs are dark in both themes. */
+  --code-bg: #0b1416;
+  --code-fg: #d7e4e4;
+  --code-muted: #86a0a2;
+
+  /* Chart series in fixed order (checked for colorblind separation). */
+  --series-1: #0f9a80;
+  --series-2: #e07b2e;
+  --series-3: #4f6bed;
+  --series-4: #d6336c;
+  --chart-grid: #e7eded;
+  --chart-axis: #82939a;
+
+  /* The sign-in brand panel is dark in both themes. */
+  --panel: #06171a;
+  --panel-glow: rgba(15, 154, 128, 0.42);
+  --panel-glow-2: rgba(79, 107, 237, 0.18);
+  --panel-accent: #8fe6d1;
+  --panel-accent-soft: rgba(15, 154, 128, 0.2);
+  --panel-ok: #6ee7b7;
+  --panel-ok-soft: rgba(52, 211, 153, 0.14);
+  --panel-live: #a5b4fc;
+  --panel-live-soft: rgba(129, 140, 248, 0.16);
+  --panel-wait: #fcd34d;
+  --panel-wait-soft: rgba(251, 191, 36, 0.14);
+
+  --elev-1: 0 1px 2px rgba(12, 28, 30, 0.05);
+  --elev-2: 0 1px 2px rgba(12, 28, 30, 0.04), 0 2px 8px rgba(12, 28, 30, 0.05);
+  --elev-3: 0 2px 4px rgba(12, 28, 30, 0.05), 0 8px 24px rgba(12, 28, 30, 0.08);
+  --elev-4: 0 4px 12px rgba(12, 28, 30, 0.08), 0 16px 40px rgba(12, 28, 30, 0.12);
+}
+
+.dark {
+  color-scheme: dark;
+  --background: #090e10;
+  --foreground: #e5eeee;
+  --card: #10181b;
+  --popover: #152024;
+  --sidebar: #0c1214;
+  --muted: #162024;
+  --accent: #1e2a2f;
+  --muted-foreground: #97a9ae;
+  --subtle: #7b8d93;
+  --faint: #56676d;
+  --border: #22323a;
+  --hairline: #1a262b;
+  --input: #2a3a41;
+  --ring: #3ccfac;
+
+  --primary: #3ccfac;
+  --primary-foreground: #03201a;
+  --primary-soft: #0d2c26;
+
+  --savings: #34d399;
+  --savings-soft: #0f2a22;
+  --warning: #fbbf24;
+  --warning-soft: #2e2410;
+  --danger: #fb7185;
+  --danger-soft: #35151e;
+  --danger-foreground: #1a0a0e;
+  --info: #4cb4f5;
+  --info-soft: #0f2333;
+  --neutral-soft: #1b2529;
+
+  --series-1: #2fc1a0;
+  --series-2: #e8893d;
+  --series-3: #7189ff;
+  --series-4: #ec5f8c;
+  --chart-grid: #1b262a;
+  --chart-axis: #728388;
+
+  --elev-1: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --elev-2: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.25);
+  --elev-3: 0 2px 6px rgba(0, 0, 0, 0.35), 0 12px 28px rgba(0, 0, 0, 0.35);
+  --elev-4: 0 6px 16px rgba(0, 0, 0, 0.4), 0 20px 48px rgba(0, 0, 0, 0.45);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans-stack);
+    font-feature-settings: "cv11", "ss01";
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--primary) 25%, transparent);
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@utility no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Surface: the one "box" in the system, a fill plus a soft shadow, never an outline. */
+@utility surface {
+  background: var(--card);
+  border-radius: 14px;
+  box-shadow: var(--elev-2);
+}
+
+.recharts-wrapper *:focus {
+  outline: none;
+}
+
+/* An indeterminate progress bar (uploads whose size the browser does not report). */
+@keyframes sqa-indeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(300%);
+  }
+}
+
+/* The caret that trails live model text while it streams. */
+@keyframes sqa-caret {
+  50% {
+    opacity: 0;
+  }
+}
+@utility live-caret {
+  &::after {
+    content: "";
+    display: inline-block;
+    width: 0.5ch;
+    height: 1.05em;
+    margin-left: 2px;
+    vertical-align: text-bottom;
+    background: var(--primary);
+    border-radius: 1px;
+    animation: sqa-caret 1s steps(1) infinite;
+  }
+}
