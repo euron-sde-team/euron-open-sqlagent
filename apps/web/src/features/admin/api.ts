@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { api, unwrap } from "@/lib/api/client";
 import { qk, STALE } from "@/lib/query-keys";
 
-/** Deployment info and the scan queue (admins). */
+/** Deployment info and the question queue (admins). */
 export function useSystemInfo() {
   return useQuery({
     queryKey: qk.system,

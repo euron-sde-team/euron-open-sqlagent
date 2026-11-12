@@ -6,8 +6,8 @@ import type { NextConfig } from "next";
  * first-party and no CORS is needed. In production a load balancer may route these paths
  * straight to the API before they reach Next.
  *
- * Reports and uploads go through this proxy too; the timeout covers long waits
- * (`?wait=` on scans).
+ * Uploads and questions go through this proxy too; the timeout covers long waits
+ * (`?wait=` on a question).
  */
 const apiInternal = (process.env.API_INTERNAL_URL || "http://localhost:5430").replace(/\/+$/, "");
 

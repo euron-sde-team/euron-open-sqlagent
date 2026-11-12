@@ -186,7 +186,7 @@ export function AskScreen() {
 
           {canAsk ? (
             <form
-              className="sticky bottom-3 z-10 mt-2"
+              className="sticky bottom-0 z-10 -mx-2 mt-2 bg-background px-2 pt-2 pb-3 before:pointer-events-none before:absolute before:inset-x-0 before:-top-6 before:h-6 before:bg-gradient-to-t before:from-background before:to-transparent"
               onSubmit={(e) => {
                 e.preventDefault();
                 submit(question);

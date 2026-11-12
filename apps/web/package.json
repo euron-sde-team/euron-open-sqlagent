@@ -2,7 +2,7 @@
   "name": "@sqlagent/web",
   "version": "0.1.0",
   "private": true,
-  "description": "SQLAgent web app: agents, teams, runs with a live inspector, approvals, tools, models, budgets, analytics and settings.",
+  "description": "SQLAgent web app: ask questions of your databases in plain English, with connections, schemas, history, templates, audit and settings.",
   "packageManager": "pnpm@9.15.0",
   "engines": {
     "node": ">=20.18"

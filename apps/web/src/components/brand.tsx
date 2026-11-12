@@ -1,19 +1,15 @@
 import { cn } from "@/lib/cn";
 
-/** The SQLAgent mark: one agent at the centre, wired to the three things it works with. */
+/** The SQLAgent mark: a database, the thing every question is answered from. */
 export function BrandMark({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 32 32" aria-hidden className={cn("size-7", className)}>
-      <rect width="32" height="32" rx="9" className="fill-primary" />
-      <g className="stroke-primary-foreground" strokeWidth="1.7" strokeLinecap="round" fill="none" opacity="0.75">
-        <path d="M16 16 9.6 10.6M16 16l6.4-5.4M16 16v7.2" />
+    <svg viewBox="0 0 44 44" aria-hidden className={cn("size-7", className)}>
+      <rect width="44" height="44" rx="12" className="fill-primary" />
+      <g className="stroke-primary-foreground" strokeWidth="2.4" fill="none">
+        <ellipse cx="22" cy="14" rx="11" ry="4.5" />
+        <path d="M11 14v16c0 2.5 5 4.5 11 4.5s11-2 11-4.5V14" />
+        <path d="M11 22c0 2.5 5 4.5 11 4.5s11-2 11-4.5" />
       </g>
-      <g className="fill-primary-foreground">
-        <circle cx="9.2" cy="10.2" r="2.3" />
-        <circle cx="22.8" cy="10.2" r="2.3" />
-        <circle cx="16" cy="23.6" r="2.3" />
-      </g>
-      <circle cx="16" cy="16" r="3.6" className="fill-primary stroke-primary-foreground" strokeWidth="2" />
     </svg>
   );
 }

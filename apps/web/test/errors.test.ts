@@ -6,17 +6,17 @@ describe("parseApiError", () => {
   it("reads the API envelope with structured details", () => {
     const err = parseApiError(422, {
       error: {
-        code: "budget_unsatisfiable",
+        code: "query_refused",
         type: "invalid_request_error",
-        message: "The context needs at least 1,240 tokens but the budget is 900. Raise max_input_tokens",
-        details: { optimized_tokens: 1240, budget: 900 },
+        message: "The planner expects 4,200,000 rows but the scan limit is 1,000,000. Narrow the time range",
+        details: { estimated_rows: 4200000, max_scan_rows: 1000000 },
       },
     });
     expect(err).toBeInstanceOf(ApiError);
     expect(err.status).toBe(422);
-    expect(err.code).toBe("budget_unsatisfiable");
-    expect(err.details).toEqual({ optimized_tokens: 1240, budget: 900 });
-    expect(errorMessage(err)).toContain("Raise max_input_tokens");
+    expect(err.code).toBe("query_refused");
+    expect(err.details).toEqual({ estimated_rows: 4200000, max_scan_rows: 1000000 });
+    expect(errorMessage(err)).toContain("Narrow the time range");
   });
 
   it("falls back to an actionable message for non-envelope bodies", () => {
@@ -26,9 +26,9 @@ describe("parseApiError", () => {
   });
 
   it("understands FastAPI's raw validation shape", () => {
-    const err = parseApiError(422, { detail: [{ loc: ["body", "max_input_tokens"], msg: "must be positive" }] });
+    const err = parseApiError(422, { detail: [{ loc: ["body", "max_rows"], msg: "must be positive" }] });
     expect(err.code).toBe("validation_error");
-    expect(errorMessage(err)).toBe("max_input_tokens: must be positive");
+    expect(errorMessage(err)).toBe("max_rows: must be positive");
   });
 });
 
