@@ -11,7 +11,10 @@ from __future__ import annotations
 import os
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
 
 import httpx
 
@@ -293,7 +296,7 @@ class SQLAgent:
     def close(self) -> None:
         self.http.close()
 
-    def __enter__(self) -> SQLAgent:
+    def __enter__(self) -> Self:
         return self
 
     def __exit__(self, *_: object) -> None:
@@ -384,7 +387,7 @@ class AsyncSQLAgent:
     async def aclose(self) -> None:
         await self.http.aclose()
 
-    async def __aenter__(self) -> AsyncSQLAgent:
+    async def __aenter__(self) -> Self:
         return self
 
     async def __aexit__(self, *_: object) -> None:
