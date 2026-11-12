@@ -22,9 +22,8 @@ with or without CTEs, joins, subqueries and window functions. A trailing semicol
 | `denied_function` | A function with side effects, sleeps, file or network access in any supported dialect: `pg_sleep`, `pg_read_file`, `dblink`, `set_config`, `nextval`, `lo_import`, `sleep`, `benchmark`, `load_file`, `get_lock`, `load_extension`, `writefile` and more. A name on any dialect's list is refused on every dialect |
 | `table_function` | A function or file path in `FROM` (`generate_series(...)`, `read_csv('...')`) |
 
-The design comes from Euron Open DataQuality's `engine/sqlguard.py`, narrowed to the three
-dialects SQLAgent connects to and extended with structured verdicts: the tables a query
-reads and its aliases (used to read query plans).
+Besides the verdict, the guard returns the tables a query reads and their aliases (used
+to read query plans) for the three dialects SQLAgent connects to.
 
 ## Where it runs
 
